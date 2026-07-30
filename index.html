@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EL FAROL - EP Ingeniería de Inteligencia Artificial (UNMSM)</title>
+    <!-- Google Fonts Pixel Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #121418;
+            --bg-card: #1e222b;
+            --bg-card-border: #3a4150;
+            --mc-green: #55ff55;
+            --mc-gold: #ffaa00;
+            --mc-yellow: #ffff55;
+            --mc-aqua: #55ffff;
+            --mc-red: #ff5555;
+            --mc-blue: #3c78d8;
+            --mc-wood-dark: #3a2312;
+            --mc-wood-light: #835432;
+            --mc-stone: #626262;
+            --text-main: #e0e0e0;
+            --text-light: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            image-rendering: pixelated;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 15%, rgba(255, 170, 0, 0.2) 0%, transparent 60%),
+                linear-gradient(rgba(18, 20, 24, 0.92), rgba(18, 20, 24, 0.96)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" fill="%23121418"/><path d="0 0h16v16H0z" fill="%23181b21"/><path d="16 16h16v16H16z" fill="%23181b21"/><path d="0 0h32v1H0z" fill="%230c0d10"/><path d="0 0h1v32H0z" fill="%230c0d10"/></svg>');
+            color: var(--text-main);
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            line-height: 1.4;
+            padding: 20px 10px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Particles & Torch Lighting Layer Canvas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Pixel Typography Headers */
+        h1, h2, h3, h4, .pixel-font {
+            font-family: 'Press Start 2P', cursive;
+            text-shadow: 3px 3px 0px #000;
+        }
+
+        /* Floating Pixel Mobs (GIFs Decorativos) */
+        .gif-mob {
+            position: absolute;
+            z-index: 3;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+        }
+
+        .mob-zombie {
+            top: 20px;
+            right: -80px;
+            width: 75px;
+            animation: walkZombie 12s linear infinite;
+        }
+
+        .mob-frog {
+            bottom: 30px;
+            left: -80px;
+            width: 65px;
+        }
+
+        .mob-panda {
+            bottom: 40px;
+            right: -75px;
+            width: 65px;
+        }
+
+        .mob-creeper {
+            top: 40%;
+            left: -85px;
+            width: 55px;
+        }
+
+        @keyframes walkZombie {
+            0% { transform: translateX(0) scaleX(1); }
+            49% { transform: translateX(20px) scaleX(1); }
+            50% { transform: translateX(20px) scaleX(-1); }
+            100% { transform: translateX(0) scaleX(-1); }
+        }
+
+        /* Banner Carrito (Minecart Section) */
+        .minecart-banner {
+            background: #181c24;
+            border: 4px solid #323a49;
+            box-shadow: 
+                inset -4px -4px 0 #0d1016,
+                inset 4px 4px 0 #4f5a70,
+                0 10px 20px rgba(0,0,0,0.8);
+            padding: 20px 15px;
+            margin: 35px 0;
+            text-align: center;
+        }
+
+        .minecart-title {
+            color: #55ffff;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .track-container {
+            position: relative;
+            background: #101217;
+            border: 2px solid #282f3d;
+            height: 60px;
+            overflow: hidden;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Rieles en movimiento constante */
+        .rails-bg {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200%;
+            height: 18px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><rect y="8" width="32" height="3" fill="%23707070"/><rect y="5" width="2" height="9" fill="%238b5a2b"/><rect x="15" y="5" width="2" height="9" fill="%238b5a2b"/><rect x="8" y="0" width="16" height="1" fill="%23ffaa00" opacity="0.6"/></svg>');
+            background-repeat: repeat-x;
+            animation: moveRails 2s linear infinite;
+        }
+
+        @keyframes moveRails {
+            0% { transform: translate(0, -50%); }
+            100% { transform: translate(-32px, -50%); }
+        }
+
+        /* Carrito desplazándose */
+        .minecart {
+            position: absolute;
+            left: -60px;
+            bottom: 12px;
+            width: 48px;
+            height: 36px;
+            animation: driveMinecart 8s linear infinite;
+        }
+
+        @keyframes driveMinecart {
+            0% { left: -60px; }
+            100% { left: 100%; }
+        }
+
+        .minecart-text {
+            color: #d0d7e2;
+            font-size: 1.15rem;
+            margin-top: 12px;
+        }
+
+        .minecart-text strong {
+            color: var(--mc-gold);
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            padding: 30px 15px 40px 15px;
+            background: rgba(22, 26, 33, 0.88);
+            border: 4px solid #3d4656;
+            box-shadow: 
+                inset -4px -4px 0px #11141a,
+                inset 4px 4px 0px #5e6b82,
+                0 10px 25px rgba(0,0,0,0.8);
+            margin-bottom: 35px;
+            position: relative;
+            overflow: visible;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .subtitle-ep {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            color: var(--mc-aqua);
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            animation: pulseText 2s infinite alternate;
+        }
+
+        @keyframes pulseText {
+            0% { opacity: 0.8; text-shadow: 0 0 2px var(--mc-aqua); }
+            100% { opacity: 1; text-shadow: 0 0 8px var(--mc-aqua); }
+        }
+
+        /* Lantern Pixel Icon Animation */
+        .lantern-container {
+            margin: 15px auto 25px auto;
+            width: 120px;
+            height: 120px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .lantern-img {
+            width: 110px;
+            height: 110px;
+            filter: drop-shadow(0 0 25px rgba(255, 170, 0, 0.85));
+            animation: floatLantern 3s ease-in-out infinite alternate, glowPulse 1.5s ease-in-out infinite alternate;
+            transition: transform 0.2s ease;
+        }
+
+        .lantern-container:hover .lantern-img {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        @keyframes floatLantern {
+            0% { transform: translateY(0px) rotate(-3deg); }
+            100% { transform: translateY(-12px) rotate(3deg); }
+        }
+
+        @keyframes glowPulse {
+            0% { filter: drop-shadow(0 0 15px rgba(255, 170, 0, 0.6)); }
+            100% { filter: drop-shadow(0 0 45px rgba(255, 220, 50, 1)); }
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            color: var(--mc-gold);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            background: linear-gradient(180deg, #ffe066 0%, #ffaa00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 3px 3px 0px #000;
+            animation: titleGlint 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlint {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.25); }
+        }
+
+        .slogan {
+            font-size: 1.3rem;
+            color: #d0d7e2;
+            max-width: 750px;
+            margin: 15px auto 25px auto;
+            line-height: 1.3;
+        }
+
+        /* Team Cards in Header */
+        .team-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .team-badge {
+            background: #282d37;
+            border: 3px solid #4a5468;
+            padding: 10px 16px;
+            box-shadow: inset -2px -2px 0 #16191f, inset 2px 2px 0 #606d87;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 220px;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .team-badge:hover {
+            transform: translateY(-5px) scale(1.03);
+            border-color: var(--mc-gold);
+            box-shadow: inset -2px -2px 0 #16191f, inset 2px 2px 0 #ffaa00, 0 5px 15px rgba(255, 170, 0, 0.3);
+        }
+
+        .team-role {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.55rem;
+            color: var(--mc-gold);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .team-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        /* Section Styling */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 40px 0 20px 0;
+            padding-bottom: 8px;
+            border-bottom: 3px dashed #3a4150;
+        }
+
+        .section-icon {
+            width: 28px;
+            height: 28px;
+            background-color: var(--mc-gold);
+            box-shadow: inset -2px -2px 0 #996600, inset 2px 2px 0 #ffdd55;
+            display: inline-block;
+            animation: spinBlock 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes spinBlock {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(180deg); }
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--mc-yellow);
+        }
+
+        /* Inventory Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .mc-card {
+            background: var(--bg-card);
+            border: 3px solid var(--bg-card-border);
+            box-shadow: 
+                inset -3px -3px 0 #111318,
+                inset 3px 3px 0 #4f586b;
+            padding: 20px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .mc-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mc-card:hover {
+            transform: translateY(-4px) scale(1.01) !important;
+            border-color: var(--mc-gold);
+            box-shadow: 
+                inset -3px -3px 0 #111318,
+                inset 3px 3px 0 #ffaa00,
+                0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .slot-icon {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            background: #14161b;
+            border: 3px solid #383f4d;
+            box-shadow: inset 2px 2px 0 #090a0c, inset -2px -2px 0 #525c70;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .mc-card:hover .slot-icon {
+            transform: scale(1.15) rotate(-5deg);
+            background: #252a35;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            color: var(--mc-green);
+            margin-top: 4px;
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            color: #c5cbd5;
+            font-size: 1.25rem;
+            line-height: 1.35;
+            padding-left: 57px;
+        }
+
+        /* Form Escúchame */
+        .escuchame-box {
+            background: linear-gradient(135deg, #232832 0%, #1a1e27 100%);
+            border: 3px solid var(--mc-gold);
+            box-shadow: 
+                inset -3px -3px 0 #0d0e12,
+                inset 3px 3px 0 #ffaa00,
+                0 0 20px rgba(255, 170, 0, 0.25);
+            padding: 25px;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            position: relative;
+        }
+
+        .escuchame-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .escuchame-title {
+            color: var(--mc-gold);
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            color: var(--mc-aqua);
+            margin-bottom: 8px;
+        }
+
+        .mc-input, .mc-textarea {
+            width: 100%;
+            background: #101216;
+            border: 3px solid #3a4150;
+            box-shadow: inset 3px 3px 0 #000;
+            color: #fff;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            padding: 10px 12px;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .mc-input:focus, .mc-textarea:focus {
+            border-color: var(--mc-gold);
+            box-shadow: inset 3px 3px 0 #000, 0 0 10px rgba(255, 170, 0, 0.4);
+        }
+
+        /* Repository Section */
+        .chest-section {
+            background: #2c1a0e;
+            border: 4px solid #633c1d;
+            box-shadow: 
+                inset -4px -4px 0 #150c06,
+                inset 4px 4px 0 #9c6030,
+                0 8px 25px rgba(0,0,0,0.7);
+            padding: 30px 25px;
+            margin-top: 45px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .chest-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chest-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .chest-icon-anim {
+            font-size: 48px;
+            display: inline-block;
+            animation: bounceChest 2s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes bounceChest {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .chest-title {
+            color: var(--mc-gold);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .chest-subtitle {
+            color: #e5c3a6;
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .folder-item {
+            background: #1e120a;
+            border: 2px solid #523218;
+            box-shadow: inset -2px -2px 0 #0d0704, inset 2px 2px 0 #734723;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #f0d5be;
+            font-size: 1.15rem;
+            transition: all 0.2s ease;
+        }
+
+        .folder-item:hover {
+            transform: translateX(5px) scale(1.02);
+            background: #2a1a0f;
+            border-color: var(--mc-gold);
+            color: var(--mc-yellow);
+        }
+
+        .folder-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--mc-gold);
+            box-shadow: inset -2px -2px 0 #a36a00, inset 2px 2px 0 #ffe066;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #000;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+
+        .folder-item:hover .folder-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        /* Buttons */
+        .mc-btn {
+            display: inline-block;
+            background: #727272;
+            border: 3px solid #000;
+            box-shadow: 
+                inset -3px -3px 0 #373737,
+                inset 3px 3px 0 #ffffff;
+            color: #ffffff;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.75rem;
+            padding: 16px 24px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 2px 2px 0 #000;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mc-btn:hover {
+            background: #8b8b8b;
+            color: var(--mc-yellow);
+            transform: translateY(-2px);
+            box-shadow: 
+                inset -3px -3px 0 #373737,
+                inset 3px 3px 0 #ffffff,
+                0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .mc-btn-gold {
+            background: #c68612;
+            box-shadow: 
+                inset -3px -3px 0 #6b4707,
+                inset 3px 3px 0 #ffe38f;
+            animation: btnGlow 2s infinite alternate;
+        }
+
+        @keyframes btnGlow {
+            0% { box-shadow: inset -3px -3px 0 #6b4707, inset 3px 3px 0 #ffe38f; }
+            100% { box-shadow: inset -3px -3px 0 #6b4707, inset 3px 3px 0 #ffe38f, 0 0 18px rgba(255, 170, 0, 0.6); }
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        /* Extra Courses Section */
+        .extra-section {
+            background: #1b263b;
+            border: 4px solid #3d5a80;
+            box-shadow: 
+                inset -4px -4px 0 #0d131d,
+                inset 4px 4px 0 #6082b6;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .extra-title {
+            color: var(--mc-aqua);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .extra-grid {
+            display grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .extra-card {
+            background: #111827;
+            border: 2px solid #2d3748;
+            padding: 15px;
+            box-shadow: inset -2px -2px 0 #000, inset 2px 2px 0 #4a5568;
+            transition: all 0.2s ease;
+        }
+
+        .extra-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--mc-aqua);
+            box-shadow: inset -2px -2px 0 #000, inset 2px 2px 0 #55ffff, 0 5px 15px rgba(85, 255, 255, 0.2);
+        }
+
+        .extra-card-title {
+            color: var(--mc-yellow);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.65rem;
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 35px 20px;
+            background: #111317;
+            border-top: 4px solid #2d333f;
+            margin-top: 50px;
+            position: relative;
+        }
+
+        .footer-brand {
+            font-size: 1.5rem;
+            color: var(--mc-gold);
+            margin-bottom: 15px;
+            animation: titleGlint 3s infinite;
+        }
+
+        .footer-team {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+            color: #b0b8c5;
+            font-size: 1.1rem;
+        }
+
+        .footer-date {
+            display: inline-block;
+            background: #202530;
+            border: 2px dashed var(--mc-gold);
+            padding: 8px 18px;
+            color: var(--mc-yellow);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.65rem;
+            margin-top: 15px;
+            animation: pulseDate 1.8s infinite alternate;
+        }
+
+        @keyframes pulseDate {
+            0% { transform: scale(1); border-color: var(--mc-gold); }
+            100% { transform: scale(1.05); border-color: var(--mc-yellow); }
+        }
+
+        /* Notification Toast */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #2b1d0c;
+            color: var(--mc-yellow);
+            text-align: center;
+            border: 3px solid var(--mc-gold);
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.65rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.9);
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; bottom: 10px; }
+            15% { opacity: 1; bottom: 30px; }
+            85% { opacity: 1; bottom: 30px; }
+            100% { opacity: 0; bottom: 10px; }
+        }
+
+        @media (max-width: 768px) {
+            .gif-mob { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .main-title { font-size: 1.6rem; }
+            .card-desc { padding-left: 0; margin-top: 10px; }
+            .team-badge { width: 100%; }
+            .mc-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas Background for Floating Fireflies/Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <header>
+            <!-- GIF 1: Baby Zombie montado en pollo -->
+            <img src="chicken_jockey.gif" alt="Baby Zombie Chicken Jockey" class="gif-mob mob-zombie">
+
+            <div class="subtitle-ep">Escuela Profesional de Ingeniería de IA - UNMSM</div>
+            
+            <!-- Pixel Art Lantern Header Graphic -->
+            <div class="lantern-container" id="interactiveLantern" title="¡Haz clic para activar un destello de luz!">
+                <svg class="lantern-img" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="7" y="0" width="2" height="2" fill="#2b2b2b"/>
+                    <rect x="6" y="2" width="4" height="1" fill="#4a4a4a"/>
+                    <rect x="4" y="3" width="8" height="2" fill="#2d3238"/>
+                    <rect x="3" y="5" width="10" height="2" fill="#3f4752"/>
+                    <rect x="4" y="7" width="8" height="6" fill="#1f1a0e"/>
+                    <rect x="6" y="8" width="4" height="4" fill="#ffaa00"/>
+                    <rect x="7" y="9" width="2" height="2" fill="#ffff55"/>
+                    <rect x="5" y="8" width="1" height="3" fill="#ff7700"/>
+                    <rect x="10" y="9" width="1" height="2" fill="#ff7700"/>
+                    <rect x="4" y="7" width="1" height="6" fill="#4a5462"/>
+                    <rect x="11" y="7" width="1" height="6" fill="#4a5462"/>
+                    <rect x="3" y="13" width="10" height="2" fill="#2d3238"/>
+                    <rect x="4" y="15" width="8" height="1" fill="#1a1d21"/>
+                </svg>
+            </div>
+
+            <h1 class="main-title">EL FAROL</h1>
+            <p class="slogan">"7 compromisos para iluminar el camino de nuestra Escuela con transparencia, comunidad y energía."</p>
+
+            <div class="team-container">
+                <div class="team-badge">
+                    <span class="team-role">Delegado</span>
+                    <span class="team-name">Miguel Araujo</span>
+                </div>
+                <div class="team-badge">
+                    <span class="team-role">Subdelegada</span>
+                    <span class="team-name">Kiara Achulli</span>
+                </div>
+                <div class="team-badge">
+                    <span class="team-role">Subdelegada</span>
+                    <span class="team-name">Alexandra Sullca</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- SECCIÓN MINECART ANIMADO (IGUAL A LA CAPTURA) -->
+        <div class="minecart-banner">
+            <h3 class="minecart-title">
+                <span style="font-size: 1.2rem;">🛤️</span> EL CARRITO RUMBO A LAS URNAS
+            </h3>
+            <div class="track-container">
+                <div class="rails-bg"></div>
+                <!-- Minecart SVG animado rodando sobre las vías -->
+                <svg class="minecart" viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Base Minecart -->
+                    <rect x="2" y="8" width="28" height="12" fill="#525968"/>
+                    <rect x="4" y="10" width="24" height="8" fill="#2b313d"/>
+                    <rect x="2" y="8" width="28" height="2" fill="#818b9c"/>
+                    <!-- Carga interna brillante -->
+                    <rect x="8" y="11" width="8" height="5" fill="#ffaa00"/>
+                    <rect x="10" y="12" width="4" height="3" fill="#ffff55"/>
+                    <!-- Ruedas -->
+                    <circle cx="8" cy="21" r="3" fill="#121418" stroke="#3d4452" stroke-width="2"/>
+                    <circle cx="24" cy="21" r="3" fill="#121418" stroke="#3d4452" stroke-width="2"/>
+                </svg>
+            </div>
+            <p class="minecart-text">
+                Cada compromiso es un bloque más en el camino. <strong>Nos vemos en la votación.</strong>
+            </p>
+        </div>
+
+        <!-- SECCIÓN DE PROPUESTAS (7 COMPROMISOS) -->
+        <main style="position: relative;">
+
+            <!-- GIF 2: Creeper decorativo -->
+            <img src="creeper.gif" alt="Creeper Minecraft" class="gif-mob mob-creeper">
+
+            <!-- BLOQUE 1: REPUTACIÓN Y TRANSPARENCIA -->
+            <div class="section-header">
+                <span class="section-icon"></span>
+                <h2 class="section-title">1. REPUTACIÓN Y TRANSPARENCIA</h2>
+            </div>
+
+            <div class="card-grid">
+                <div class="mc-card">
+                    <div class="card-top">
+                        <div class="slot-icon">✨</div>
+                        <h3 class="card-title">Limpiar el nombre de nuestra EP</h3>
+                    </div>
+                    <p class="card-desc">Que la Escuela sea reconocida por su seriedad y compromiso, actuando con responsabilidad en cada actividad que nos represente ante otras escuelas y la facultad.</p>
+                </div>
+
+                <div class="mc-card">
+                    <div class="card-top">
+                        <div class="slot-icon">🔄</div>
+                        <h3 class="card-title">Información simétrica</h3>
+                    </div>
+                    <p class="card-desc">Mismos avisos, fechas y acuerdos para todos por canales oficiales, sin favoritismos hacia un grupo cerrado de compañeros.</p>
+                </div>
+            </div>
+
+            <!-- BLOQUE 2: POSTURA INSTITUCIONAL -->
+            <div class="section-header">
+                <span class="section-icon" style="background-color: var(--mc-aqua); box-shadow: inset -2px -2px 0 #008888, inset 2px 2px 0 #aaffff;"></span>
+                <h2 class="section-title" style="color: var(--mc-aqua);">2. POSTURA INSTITUCIONAL</h2>
+            </div>
+
+            <div class="card-grid">
+                <div class="mc-card">
+                    <div class="card-top">
+                        <div class="slot-icon">⚖️</div>
+                        <h3 class="card-title">Sin política</h3>
+                    </div>
+                    <p class="card-desc">Neutralidad frente a la política universitaria y externa; el rol de representante es gestionar temas académicos y de bienestar.</p>
+                </div>
+
+                <div class="mc-card">
+                    <div class="card-top">
+                        <div class="slot-icon">🎯</div>
+                        <h3 class="card-title">Enfoque en nuestra EP</h3>
+                    </div>
+                    <p class="card-desc">Lo de otras escuelas se queda en otras escuelas, salvo que el tema involucre directamente a Ingeniería de IA.</p>
+                </div>
+
+                <div class="mc-card">
+                    <div class="card-top">
+                        <div class="slot-icon">🛡️</div>
+                        <h3 class="card-title">Imparcialidad</h3>
+                    </div>
+                    <p class="card-desc">Decisiones basadas en lo justo para el grupo, no en preferencias personales o amistades.</p>
+                </div>
+            </div>
+
+            <!-- BLOQUE 3: COMUNIDAD -->
+            <div class="section-header">
+                <span class="section-icon" style="background-color: var(--mc-green); box-shadow: inset -2px -2px 0 #008800, inset 2px 2px 0 #aaffaa;"></span>
+                <h2 class="section-title" style="color: var(--mc-green);">3. COMUNIDAD</h2>
+            </div>
+
+            <div class="card-grid">
+                <div class="mc-card">
+                    <div class="card-top">
+                        <div class="slot-icon">🤝</div>
+                        <h3 class="card-title">Ayuda a todos los compañeros</h3>
+                    </div>
+                    <p class="card-desc">Apoyo genuino y disponible para cualquier compañero en lo que necesite: dudas académicas, trámites o mediación con docentes, sin importar la cercanía.</p>
+                </div>
+            </div>
+
+            <!-- Compromiso 7: Escúchame (Formulario) -->
+            <div class="escuchame-box">
+                <!-- GIF 3: Frog (Rana) -->
+                <img src="frog.gif" alt="Frog Minecraft" class="gif-mob mob-frog">
+
+                <div class="escuchame-title">
+                    <span style="font-size: 24px;">💬</span>
+                    <span>7. COMPROMISO: ESCÚCHAME</span>
+                </div>
+                <p style="color: #d0d7e2; margin-bottom: 20px; font-size: 1.2rem;">
+                    Formulario activo para que los estudiantes propongan temas de bienestar y desarrollo personal. Queremos una participación activa y actividades acordes a tus necesidades reales.
+                </p>
+
+                <form id="escuchameForm" onsubmit="handleFormSubmit(event)">
+                    <div class="form-group">
+                        <label for="nombre">TU NOMBRE / ALIAS (OPCIONAL):</label>
+                        <input type="text" id="nombre" class="mc-input" placeholder="Ej. Steve_IA">
+                    </div>
+                    <div class="form-group">
+                        <label for="propuesta">TU PROPUESTA O SUGERENCIA DE BIENESTAR:</label>
+                        <textarea id="propuesta" class="mc-textarea" rows="3" required placeholder="Escribe aquí tu idea para mejorar la escuela..."></textarea>
+                    </div>
+                    <button type="submit" class="mc-btn mc-btn-gold" style="width: 100%;">ENVIAR PROPUESTA AL FAROL</button>
+                </form>
+            </div>
+
+            <!-- REPOSITORIO ACADÉMICO -->
+            <section class="chest-section">
+                <div class="chest-header">
+                    <div class="chest-icon-anim" id="chestIcon" title="¡Haz clic en el cofre!">📦</div>
+                    <h2 class="chest-title">REPOSITORIO ACADÉMICO</h2>
+                    <p class="chest-subtitle">
+                        Como parte de nuestra gestión académica, ponemos a disposición de todos un <strong>Google Drive compartido</strong> con material de la escuela organizado por curso y ciclo. ¡Centralizamos apuntes, guías y recursos para que nadie se quede atrás!
+                    </p>
+                </div>
+
+                <div class="folder-grid">
+                    <div class="folder-item">
+                        <div class="folder-icon">📂</div>
+                        <span>REDACCIÓN 2</span>
+                    </div>
+                    <div class="folder-item">
+                        <div class="folder-icon">📂</div>
+                        <span>PROGRAMACIÓN 1</span>
+                    </div>
+                    <div class="folder-item">
+                        <div class="folder-icon">📂</div>
+                        <span>INVESTIGACIÓN FORMATIVA</span>
+                    </div>
+                    <div class="folder-item">
+                        <div class="folder-icon">📂</div>
+                        <span>FÍSICA 1</span>
+                    </div>
+                    <div class="folder-item">
+                        <div class="folder-icon">📂</div>
+                        <span>CÁLCULO 2</span>
+                    </div>
+                    <div class="folder-item">
+                        <div class="folder-icon">📂</div>
+                        <span>SEGUNDO CICLO (IA)</span>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <a href="https://drive.google.com/drive/folders/1fa7SzHkJD3_Pf7Det-vqiIGNf_J430Mu?usp=sharing" target="_blank" onclick="openDriveLink(event)" class="mc-btn mc-btn-gold" style="font-size: 0.9rem; padding: 18px 32px;">
+                        💎 ABRIR REPOSITORIO EN DRIVE
+                    </a>
+                </div>
+
+                <!-- SUB-SECCIÓN EXTRA -->
+                <div class="extra-section">
+                    <h3 class="extra-title">✨ RECURSOS EXTRA (HABILIDADES CLAVE)</h3>
+                    <p style="color: #b0c4de; font-size: 1.15rem;">
+                        Además de los cursos del syllabus, incluimos una sección especial "EXTRA" para reforzar competencias indispensables en Inteligencia Artificial:
+                    </p>
+
+                    <div class="extra-grid">
+                        <div class="extra-card">
+                            <div class="extra-card-title">🗣️ INGLES</div>
+                            <p style="font-size: 1.1rem; color: #a0aec0;">Material y guías para el dominio del idioma técnico internacional.</p>
+                        </div>
+                        <div class="extra-card">
+                            <div class="extra-card-title">🐍 CURSO DE PYTHON</div>
+                            <p style="font-size: 1.1rem; color: #a0aec0;">Fundamentos y librerías clave para desarrollo e IA.</p>
+                        </div>
+                        <div class="extra-card">
+                            <div class="extra-card-title">⚡ CURSO DE C++</div>
+                            <p style="font-size: 1.1rem; color: #a0aec0;">Programación de alto rendimiento y lógica estructurada.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer>
+            <!-- GIF 4: Panda -->
+            <img src="panda.gif" alt="Panda Minecraft" class="gif-mob mob-panda">
+
+            <div class="footer-brand pixel-font">SOMOS EL FAROL</div>
+            <p style="color: var(--mc-aqua); font-size: 1.1rem;">EP de Ingeniería de Inteligencia Artificial - UNMSM</p>
+
+            <div class="footer-team">
+                <span><strong>Delegado:</strong> Miguel Araujo</span> | 
+                <span><strong>Subdelegada:</strong> Kiara Achulli</span> | 
+                <span><strong>Subdelegada:</strong> Alexandra Sullca</span>
+            </div>
+
+            <div class="footer-date">
+                🗳️ ELECCIONES ESTUDIANTILES: [FECHA DE VOTACIÓN]
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast">¡Propuesta enviada con éxito!</div>
+
+    <!-- Script -->
+    <script>
+        const driveUrl = "https://drive.google.com/drive/folders/1fa7SzHkJD3_Pf7Det-vqiIGNf_J430Mu?usp=sharing";
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const propuesta = document.getElementById('propuesta').value;
+
+            if(propuesta.trim() === '') return;
+
+            showToast('¡GRACIAS! PROPUESTA REGISTRADA EN EL FAROL');
+            createBurstParticles(window.innerWidth / 2, window.innerHeight / 2, 40);
+            document.getElementById('escuchameForm').reset();
+        }
+
+        function openDriveLink(e) {
+            e.preventDefault();
+            showToast('🔗 ABRIENDO REPOSITORIO DE EL FAROL...');
+            const rect = e.target.getBoundingClientRect();
+            createBurstParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, 35);
+
+            setTimeout(() => {
+                window.open(driveUrl, '_blank');
+            }, 600);
+        }
+
+        document.getElementById('chestIcon').addEventListener('click', (e) => {
+            const chest = e.target;
+            chest.innerText = '🎁';
+            showToast('¡REPOSITORIO DESBLOQUEADO!');
+            const rect = chest.getBoundingClientRect();
+            createBurstParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, 30);
+            setTimeout(() => { chest.innerText = '📦'; }, 1500);
+        });
+
+        document.getElementById('interactiveLantern').addEventListener('click', (e) => {
+            showToast('✨ EL FAROL ILUMINA NUESTRA ESCUELA ✨');
+            const rect = e.currentTarget.getBoundingClientRect();
+            createBurstParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, 50);
+        });
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.className = 'show';
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
+        }
+
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.mc-card, .escuchame-box, .chest-section').forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        // Particle FX
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const particles = [];
+        const burstParticles = [];
+        for (let i = 0; i < 45; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 4 + 2,
+                speedY: -(Math.random() * 0.7 + 0.2),
+                speedX: (Math.random() - 0.5) * 0.5,
+                opacity: Math.random() * 0.7 + 0.3,
+                color: Math.random() > 0.3 ? '#ffaa00' : (Math.random() > 0.5 ? '#ffff55' : '#55ffff')
+            });
+        }
+
+        function createBurstParticles(x, y, count = 25) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                burstParticles.push({
+                    x: x, y: y,
+                    size: Math.random() * 6 + 3,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 1,
+                    decay: Math.random() * 0.03 + 0.015,
+                    color: ['#ffaa00', '#ffff55', '#55ffff', '#ffffff'][Math.floor(Math.random() * 4)]
+                });
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y += p.speedY; p.x += p.speedX;
+                if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+                ctx.fillStyle = p.color; ctx.globalAlpha = p.opacity;
+                ctx.fillRect(Math.floor(p.x), Math.floor(p.y), Math.floor(p.size), Math.floor(p.size));
+            });
+
+            for (let i = burstParticles.length - 1; i >= 0; i--) {
+                const bp = burstParticles[i];
+                bp.x += bp.vx; bp.y += bp.vy; bp.life -= bp.decay;
+                if (bp.life <= 0) { burstParticles.splice(i, 1); continue; }
+                ctx.fillStyle = bp.color; ctx.globalAlpha = bp.life;
+                ctx.fillRect(Math.floor(bp.x), Math.floor(bp.y), Math.floor(bp.size), Math.floor(bp.size));
+            }
+            ctx.globalAlpha = 1.0;
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+    </script>
+</body>
+</html>
