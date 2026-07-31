@@ -258,6 +258,7 @@
         .section-title { font-size: 1.1rem; color: var(--mc-purple); text-shadow: 2px 2px 0 #000; }
 
         .card-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+        .card-grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 
         .mc-card {
             background: var(--bg-card);
@@ -267,9 +268,32 @@
         }
 
         .card-top { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 10px; }
-        .slot-icon { width: 42px; height: 42px; background: #14161b; border: 3px solid #383f4d; display: flex; justify-content: center; align-items: center; font-size: 20px; }
+        .slot-icon { width: 42px; height: 42px; background: #14161b; border: 3px solid #383f4d; display: flex; justify-content: center; align-items: center; font-size: 20px; flex-shrink: 0; }
         .card-title { font-size: 0.85rem; color: var(--mc-green); margin-top: 4px; text-shadow: 2px 2px 0 #000; }
         .card-desc { color: #c5cbd5; font-size: 1.25rem; padding-left: 57px; }
+
+        /* REGISTRO DE CUMPLEAÑOS Y LISTA */
+        .bday-list-box {
+            background: #12151c;
+            border: 2px dashed var(--mc-purple);
+            padding: 12px;
+            margin-top: 15px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .bday-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            border-bottom: 1px solid #2d3342;
+            font-size: 1.1rem;
+        }
+
+        .bday-item:last-child { border-bottom: none; }
+        .bday-name { color: var(--mc-yellow); font-weight: bold; }
+        .bday-date { color: var(--mc-aqua); font-family: 'Press Start 2P', cursive; font-size: 0.55rem; }
 
         /* ENDER SIMULADOR DE HORARIOS */
         .nether-section {
@@ -514,7 +538,10 @@
         #toast.show { visibility: visible; animation: fadeInOut 3s forwards; }
 
         @keyframes fadeInOut { 0% { opacity: 0; bottom: 10px; } 15% { opacity: 1; bottom: 30px; } 85% { opacity: 1; bottom: 30px; } 100% { opacity: 0; bottom: 10px; } }
-        @media (max-width: 768px) { .gif-mob { display: none; } }
+        @media (max-width: 768px) { 
+            .gif-mob { display: none; } 
+            .card-grid-2col { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -617,12 +644,68 @@
             <!-- BLOQUE 3 -->
             <div class="section-header">
                 <span class="section-icon" style="background-color: var(--mc-green);"></span>
-                <h2 class="section-title" style="color: var(--mc-green);">3. COMUNIDAD</h2>
+                <h2 class="section-title" style="color: var(--mc-green);">3. COMUNIDAD Y PERTENENCIA</h2>
             </div>
-            <div class="card-grid">
+            
+            <div class="card-grid" style="margin-bottom: 18px;">
                 <div class="mc-card">
                     <div class="card-top"><div class="slot-icon">🤝</div><h3 class="card-title">Ayuda a todos los compañeros</h3></div>
                     <p class="card-desc">Apoyo genuino y disponible para cualquier compañero en lo que necesite: dudas académicas, trámites o mediación con docentes, sin importar la cercanía.</p>
+                </div>
+            </div>
+
+            <!-- PROPUESTA DE CUMPLEAÑOS Y REGISTRO AL LADO -->
+            <div class="card-grid-2col">
+                <!-- PROPUESTA EXPLAYADA -->
+                <div class="mc-card">
+                    <div class="card-top">
+                        <div class="slot-icon">🎂</div>
+                        <h3 class="card-title">Cumpleaños en Comunidad</h3>
+                    </div>
+                    <div class="card-desc" style="padding-left: 0; font-size: 1.15rem; margin-top: 10px;">
+                        <p style="margin-bottom: 10px;">
+                            Creemos firmemente que una carrera exigente como la nuestra no solo requiere esfuerzo académico, sino también espacios de calidez humana. Proponemos organizar <strong>celebraciones mensuales de cumpleaños</strong> para agasajar comunitariamente a todos los compañeros que cumplan años durante el mes.
+                        </p>
+                        <p style="margin-bottom: 10px;">
+                            <strong>¿Por qué es vital esta propuesta?</strong>
+                        </p>
+                        <ul style="list-style-type: square; padding-left: 20px; color: #b8c4d6; margin-bottom: 10px;">
+                            <li><strong>Fortalecimiento del sentido de pertenencia:</strong> Que cada estudiante sienta que su presencia en la universidad importa y que es reconocido por su grupo.</li>
+                            <li><strong>Integración real:</strong> Romper barreras entre bases o grupos cerrados, promoviendo espacios donde podamos compartir fuera de la tensión de los parciales y finales.</li>
+                            <li><strong>Bienestar emocional:</strong> Un pequeño detalle, un compartir o un saludo comunitario puede marcar una gran diferencia en la salud mental y motivación académica.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- REGISTRO Y REGISTRO GUARDADO -->
+                <div class="mc-card" style="background: #171a22; border-color: var(--mc-purple);">
+                    <div class="card-top">
+                        <div class="slot-icon" style="border-color: var(--mc-purple);">🎁</div>
+                        <h3 class="card-title" style="color: var(--mc-purple);">Registro de Cumpleaños</h3>
+                    </div>
+                    
+                    <form id="bdayForm" style="margin-top: 10px;">
+                        <div class="form-group">
+                            <label for="bdayNombre">TU NOMBRE Y APELLIDO:</label>
+                            <input type="text" id="bdayNombre" class="mc-input" required placeholder="Ej. Steve Miner">
+                        </div>
+                        <div class="form-group">
+                            <label for="bdayFecha">FECHA DE CUMPLEAÑOS:</label>
+                            <input type="date" id="bdayFecha" class="mc-input" required style="color-scheme: dark;">
+                        </div>
+                        <button type="submit" class="mc-btn mc-btn-purple" style="width: 100%; font-size: 0.6rem; padding: 12px;">REGISTRAR MI CUMPLEAÑOS 🎈</button>
+                    </form>
+
+                    <!-- CONTENEDOR PARA VER EL REGISTRO -->
+                    <div style="margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-family: 'Press Start 2P', cursive; font-size: 0.6rem; color: var(--mc-yellow);">📋 VER REGISTROS:</span>
+                            <button type="button" id="clearBdaysBtn" style="background: none; border: none; color: #ff5555; font-family: 'Press Start 2P', cursive; font-size: 0.45rem; cursor: pointer;">[BORRAR TODO]</button>
+                        </div>
+                        <div class="bday-list-box" id="bdayList">
+                            <!-- Se renderiza desde Firebase -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -677,7 +760,7 @@
                 
                 <div class="minesweeper-controls">
                     <span>LAVA CERCANA: <span id="lavaCount">10</span> 🌋</span>
-                    <button class="mc-btn mc-btn-purple" style="padding: 6px 12px; font-size: 0.55rem; margin-top: 0;" onclick="resetMinesweeper()">REINICIAR</button>
+                    <button class="mc-btn mc-btn-purple" style="padding: 6px 12px; font-size: 0.55rem; margin-top: 0;" id="resetMsBtn">REINICIAR</button>
                 </div>
 
                 <div class="minesweeper-grid" id="msGrid"></div>
@@ -695,7 +778,7 @@
                     Formulario activo para que los estudiantes propongan temas de bienestar y desarrollo personal. Queremos una participación activa y actividades acordes a tus necesidades reales.
                 </p>
 
-                <form id="escuchameForm" onsubmit="handleFormSubmit(event)">
+                <form id="escuchameForm">
                     <div class="form-group">
                         <label for="nombre">TU NOMBRE / ALIAS (OPCIONAL):</label>
                         <input type="text" id="nombre" class="mc-input" placeholder="Ej. Steve_IA">
@@ -728,7 +811,7 @@
                 </div>
 
                 <div class="btn-container">
-                    <a href="https://drive.google.com/drive/folders/1fa7SzHkJD3_Pf7Det-vqiIGNf_J430Mu?usp=sharing" target="_blank" onclick="openDriveLink(event)" class="mc-btn mc-btn-purple">🔮 ABRIR REPOSITORIO EN DRIVE</a>
+                    <a href="https://drive.google.com/drive/folders/1fa7SzHkJD3_Pf7Det-vqiIGNf_J430Mu?usp=sharing" id="openDriveBtn" target="_blank" class="mc-btn mc-btn-purple">🔮 ABRIR REPOSITORIO EN DRIVE</a>
                 </div>
 
                 <!-- EXTRAS COMPLETO -->
@@ -773,7 +856,128 @@
 
     <div id="toast">¡Propuesta enviada con éxito!</div>
 
-    <script>
+    <!-- FIREBASE & CORE SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Configuración oficial conectada a tu Realtime Database
+        const firebaseConfig = {
+            databaseURL: "https://farol-ia-default-rtdb.firebaseio.com/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Toast Helper
+        window.showToast = function(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.className = 'show';
+            setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // 1. REGISTRO DE CUMPLEAÑOS EN FIREBASE
+        const bdayForm = document.getElementById('bdayForm');
+        bdayForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('bdayNombre').value.trim();
+            const fecha = document.getElementById('bdayFecha').value;
+
+            if (!nombre || !fecha) return;
+
+            const bdaysRef = ref(db, 'cumpleanios');
+            push(bdaysRef, {
+                nombre,
+                fecha,
+                timestamp: Date.now()
+            }).then(() => {
+                bdayForm.reset();
+                showToast('🎉 ¡CUMPLEAÑOS REGISTRADO EN LA NUBE!');
+            }).catch(err => {
+                console.error(err);
+                showToast('❌ Error al guardar cumpleaños');
+            });
+        });
+
+        // ESCUCHAR CUMPLEAÑOS EN TIEMPO REAL
+        const bdayListEl = document.getElementById('bdayList');
+        const bdaysRef = ref(db, 'cumpleanios');
+
+        onValue(bdaysRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                bdayListEl.innerHTML = '<p style="color: #6c757d; font-size: 0.9rem; text-align: center; margin-top: 10px;">Aún no hay cumpleaños registrados.</p>';
+                return;
+            }
+
+            let bdays = [];
+            Object.keys(data).forEach(key => {
+                bdays.push(data[key]);
+            });
+
+            // Ordenar por mes y día
+            bdays.sort((a, b) => {
+                const dateA = new Date(a.fecha);
+                const dateB = new Date(b.fecha);
+                return (dateA.getMonth() - dateB.getMonth()) || (dateA.getDate() - dateB.getDate());
+            });
+
+            const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+            let html = '';
+
+            bdays.forEach(item => {
+                const parts = item.fecha.split('-');
+                const mesStr = meses[parseInt(parts[1], 10) - 1] || '';
+                const diaStr = parts[2];
+
+                html += `
+                    <div class="bday-item">
+                        <span class="bday-name">🎂 ${escapeHtml(item.nombre)}</span>
+                        <span class="bday-date">${diaStr} ${mesStr}</span>
+                    </div>
+                `;
+            });
+
+            bdayListEl.innerHTML = html;
+        });
+
+        // BORRAR REGISTROS DE FIREBASE
+        document.getElementById('clearBdaysBtn').addEventListener('click', () => {
+            if (confirm('¿Deseas limpiar todos los registros de la base de datos?')) {
+                remove(ref(db, 'cumpleanios'))
+                    .then(() => showToast('Registros eliminados de Firebase.'))
+                    .catch(() => showToast('Error al borrar datos.'));
+            }
+        });
+
+        // 2. ENVÍO DE PROPUESTAS (ESCÚCHAME) A FIREBASE
+        const escuchameForm = document.getElementById('escuchameForm');
+        escuchameForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('nombre').value.trim() || 'Anónimo';
+            const propuesta = document.getElementById('propuesta').value.trim();
+
+            if (!propuesta) return;
+
+            const propuestasRef = ref(db, 'propuestas');
+            push(propuestasRef, {
+                nombre,
+                propuesta,
+                fecha: new Date().toISOString()
+            }).then(() => {
+                escuchameForm.reset();
+                showToast('¡GRACIAS! PROPUESTA ENVIADA A FIREBASE');
+            }).catch(err => {
+                console.error(err);
+                showToast('❌ Error al enviar propuesta');
+            });
+        });
+
         // BRILLO AL PRESIONAR EL FAROL
         const lantern = document.getElementById('interactiveLantern');
         lantern.addEventListener('click', (e) => {
@@ -784,6 +988,14 @@
             createBurstParticles(e.clientX, e.clientY, 40);
         });
 
+        // REPOSITORIO DRIVE BTN
+        const driveUrl = "https://drive.google.com/drive/folders/1fa7SzHkJD3_Pf7Det-vqiIGNf_J430Mu?usp=sharing";
+        document.getElementById('openDriveBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            showToast('🔮 ABRIENDO REPOSITORIO DE EL FAROL...');
+            setTimeout(() => { window.open(driveUrl, '_blank'); }, 600);
+        });
+
         // --- MINIJUEGO: BUSCAMINAS CON MINERALES DE MINECRAFT ---
         const ROWS = 9;
         const COLS = 9;
@@ -791,21 +1003,13 @@
         let msGridData = [];
         let gameOver = false;
 
-        // Generador SVG de Minerales de Minecraft
         const ORE_SVGS = [
-            // Gold
             'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23737373"/><rect x="2" y="2" width="3" height="3" fill="%23ffaa00"/><rect x="8" y="3" width="4" height="2" fill="%23ffaa00"/><rect x="4" y="9" width="3" height="3" fill="%23ffaa00"/><rect x="10" y="10" width="3" height="3" fill="%23ffaa00"/><rect x="11" y="2" width="2" height="2" fill="%23ffff55"/><rect x="3" y="10" width="1" height="1" fill="%23ffff55"/></svg>',
-            // Iron
             'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23737373"/><rect x="3" y="2" width="3" height="3" fill="%23d8af93"/><rect x="9" y="4" width="4" height="2" fill="%23d8af93"/><rect x="2" y="10" width="3" height="3" fill="%23d8af93"/><rect x="10" y="9" width="3" height="3" fill="%23d8af93"/><rect x="10" y="2" width="2" height="2" fill="%23f5e1d3"/><rect x="3" y="10" width="1" height="1" fill="%23f5e1d3"/></svg>',
-            // Diamond
             'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23737373"/><rect x="2" y="3" width="3" height="3" fill="%2355ffff"/><rect x="8" y="2" width="4" height="2" fill="%2355ffff"/><rect x="4" y="9" width="3" height="3" fill="%2355ffff"/><rect x="10" y="10" width="3" height="3" fill="%2355ffff"/><rect x="10" y="2" width="2" height="2" fill="%23ffffff"/><rect x="3" y="9" width="1" height="1" fill="%23ffffff"/></svg>',
-            // Emerald
             'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23737373"/><rect x="3" y="2" width="3" height="3" fill="%2355ff55"/><rect x="8" y="4" width="4" height="2" fill="%2355ff55"/><rect x="2" y="10" width="3" height="3" fill="%2355ff55"/><rect x="10" y="9" width="3" height="3" fill="%2355ff55"/><rect x="10" y="3" width="2" height="2" fill="%23aaffaa"/><rect x="3" y="10" width="1" height="1" fill="%23aaffaa"/></svg>',
-            // Redstone
             'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23737373"/><rect x="2" y="3" width="3" height="3" fill="%23ff3333"/><rect x="8" y="2" width="4" height="2" fill="%23ff3333"/><rect x="4" y="9" width="3" height="3" fill="%23ff3333"/><rect x="10" y="10" width="3" height="3" fill="%23ff3333"/><rect x="10" y="2" width="2" height="2" fill="%23ff9999"/><rect x="3" y="9" width="1" height="1" fill="%23ff9999"/></svg>',
-            // Lapis Lazuli
             'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23737373"/><rect x="3" y="2" width="3" height="3" fill="%232b55ff"/><rect x="8" y="4" width="4" height="2" fill="%232b55ff"/><rect x="2" y="10" width="3" height="3" fill="%232b55ff"/><rect x="10" y="9" width="3" height="3" fill="%232b55ff"/><rect x="10" y="3" width="2" height="2" fill="%2385a3ff"/><rect x="3" y="10" width="1" height="1" fill="%2385a3ff"/></svg>',
-            // Coal
             'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23737373"/><rect x="2" y="3" width="3" height="3" fill="%23222222"/><rect x="8" y="2" width="4" height="2" fill="%23222222"/><rect x="4" y="9" width="3" height="3" fill="%23222222"/><rect x="10" y="10" width="3" height="3" fill="%23222222"/><rect x="10" y="2" width="2" height="2" fill="%23444444"/><rect x="3" y="9" width="1" height="1" fill="%23444444"/></svg>'
         ];
 
@@ -824,7 +1028,6 @@
             for (let r = 0; r < ROWS; r++) {
                 let row = [];
                 for (let c = 0; c < COLS; c++) {
-                    // Seleccionar una textura de mineral aleatoria
                     const randomOre = ORE_SVGS[Math.floor(Math.random() * ORE_SVGS.length)];
                     row.push({
                         r, c,
@@ -838,7 +1041,6 @@
                 msGridData.push(row);
             }
 
-            // Colocar Lava Aleatoria
             let placed = 0;
             while (placed < LAVA_MINES) {
                 let r = Math.floor(Math.random() * ROWS);
@@ -849,7 +1051,6 @@
                 }
             }
 
-            // Calcular Lava Cercana
             for (let r = 0; r < ROWS; r++) {
                 for (let c = 0; c < COLS; c++) {
                     if (msGridData[r][c].isLava) continue;
@@ -866,7 +1067,6 @@
                 }
             }
 
-            // Renderizar celdas
             for (let r = 0; r < ROWS; r++) {
                 for (let c = 0; c < COLS; c++) {
                     const cellEl = document.createElement('div');
@@ -874,7 +1074,7 @@
                     cellEl.id = `cell-${r}-${c}`;
                     cellEl.style.backgroundImage = `url("${msGridData[r][c].oreTexture}")`;
 
-                    cellEl.addEventListener('click', (e) => revealCell(r, c));
+                    cellEl.addEventListener('click', () => revealCell(r, c));
                     cellEl.addEventListener('contextmenu', (e) => {
                         e.preventDefault();
                         toggleFlag(r, c);
@@ -896,7 +1096,6 @@
             el.classList.add('revealed');
 
             if (cell.isLava) {
-                // GAME OVER - PICO LAVA
                 el.classList.add('lava');
                 el.innerText = '🌋';
                 endGame(false);
@@ -907,7 +1106,6 @@
                 el.innerText = cell.neighborLava;
                 el.style.color = NUMBER_COLORS[cell.neighborLava - 1] || '#fff';
             } else {
-                // Expansión automática
                 for (let dr = -1; dr <= 1; dr++) {
                     for (let dc = -1; dc <= 1; dc++) {
                         let nr = r + dr, nc = c + dc;
@@ -951,7 +1149,6 @@
                 status.style.color = 'var(--mc-purple)';
                 showToast('💥 ¡CUIDADO! TE HAS CAÍDO EN LA LAVA');
                 
-                // Revelar todas las lavas
                 for (let r = 0; r < ROWS; r++) {
                     for (let c = 0; c < COLS; c++) {
                         if (msGridData[r][c].isLava) {
@@ -977,11 +1174,7 @@
             }
         }
 
-        function resetMinesweeper() {
-            initMinesweeper();
-        }
-
-        // Inicializar Buscaminas
+        document.getElementById('resetMsBtn').addEventListener('click', initMinesweeper);
         initMinesweeper();
 
         // DRAG & DROP SIMULADOR ENDER
@@ -1022,28 +1215,7 @@
             zone.innerHTML = `<div class="placed-course" style="background-color: ${color}; color: #000;">${text}</div>`;
         }
 
-        const driveUrl = "https://drive.google.com/drive/folders/1fa7SzHkJD3_Pf7Det-vqiIGNf_J430Mu?usp=sharing";
-
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            showToast('¡GRACIAS! PROPUESTA REGISTRADA EN EL FAROL');
-            document.getElementById('escuchameForm').reset();
-        }
-
-        function openDriveLink(e) {
-            e.preventDefault();
-            showToast('🔮 ABRIENDO REPOSITORIO DE EL FAROL...');
-            setTimeout(() => { window.open(driveUrl, '_blank'); }, 600);
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.className = 'show';
-            setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
-        }
-
-        // CANVAS PARTICLES & BURSTS (ENDER STYLE)
+        // CANVAS PARTICLES & BURSTS
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
